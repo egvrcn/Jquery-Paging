@@ -1,0 +1,25 @@
+ $(document).ready(function () {
+
+        $('#myDataTable').dataTable({
+            "bServerSide": true,
+            "sAjaxSource": "AjaxHandler",
+            "fnServerParams": function ( aoData ) {
+                aoData.push( { "name": "filter", "value": "46010304" } );
+            },
+            "bProcessing": true,
+            "aoColumns": [
+                            {
+                                "sName": "KURUM_KISAKOD",
+                                "bSearchable": true
+                            },
+                            {
+                                "sName": "FONK_KISAKOD",
+                                "bSearchable": true
+                            },
+                            {
+                                "sName": "REFERANS",
+                                "bSearchable": true
+                            }
+            ]
+        });
+    });
