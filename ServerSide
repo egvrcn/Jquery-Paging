@@ -1,0 +1,90 @@
+public ActionResult AjaxHandler(string filter, jQueryDataTableParamModel param)
+        {
+            ReadManager readManager = new ReadManager();
+            //46010304
+            List<MUH_YANSIT_TIP> result = readManager.ReadMUH_YANSIT_TIP_ABONE(filter);
+            int total = result.Count();
+
+            //SEARCH
+            if (!string.IsNullOrEmpty(param.sSearch))
+            {
+                //Search var
+                result = result.Where(c =>
+                              c.KURUM_KISAKOD.Contains(param.sSearch)
+                                     ||
+                              c.FONK_KISAKOD.Contains(param.sSearch)
+                                     ||
+                              c.REFERANS.ToString().Contains(param.sSearch)
+                              ).Skip(param.iDisplayStart).Take(param.iDisplayLength).ToList();
+            }
+            else
+            {
+                result = result.Skip(param.iDisplayStart).Take(param.iDisplayLength).ToList();
+            }
+            //SEARCH SONU
+
+            var sonuc = from c in result
+                        select new { KURUM_KISAKOD = c.KURUM_KISAKOD, FONK_KISAKOD = c.FONK_KISAKOD, REFERANS = c.REFERANS };
+
+            List<string[]> arrString = new List<string[]>();
+            foreach (var item in sonuc)
+            {
+                arrString.Add(new string[] { item.KURUM_KISAKOD, item.FONK_KISAKOD, item.REFERANS + "" });
+            }
+
+            return Json(new
+            {
+                sEcho = param.sEcho,
+                iTotalRecords = total,
+                iTotalDisplayRecords = total,
+                aaData = arrString
+
+            },
+            JsonRequestBehavior.AllowGet);
+        }
+    }
+    
+    
+    
+    
+      /// <summary>
+    /// Class that encapsulates most common parameters sent by DataTables plugin
+    /// </summary>
+    public class jQueryDataTableParamModel
+    {
+        /// <summary>
+        /// Request sequence number sent by DataTable,
+        /// same value must be returned in response
+        /// </summary>       
+        public string sEcho { get; set; }
+
+        /// <summary>
+        /// Text used for filtering
+        /// </summary>
+        public string sSearch { get; set; }
+
+        /// <summary>
+        /// Number of records that should be shown in table
+        /// </summary>
+        public int iDisplayLength { get; set; }
+
+        /// <summary>
+        /// First record that should be shown(used for paging)
+        /// </summary>
+        public int iDisplayStart { get; set; }
+
+        /// <summary>
+        /// Number of columns in table
+        /// </summary>
+        public int iColumns { get; set; }
+
+        /// <summary>
+        /// Number of columns that are used in sorting
+        /// </summary>
+        public int iSortingCols { get; set; }
+
+        /// <summary>
+        /// Comma separated list of column names
+        /// </summary>
+        public string sColumns { get; set; }
+    }
